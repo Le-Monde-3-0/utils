@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-func getUserId(c *gin.Context) (int32, error) {
+func GetUserId(c *gin.Context) (int32, error) {
 
 	bearerToken := c.Request.Header.Get("Authorization")
 	tokenString := ""
