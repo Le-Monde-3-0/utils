@@ -37,7 +37,7 @@ func GetUserId(c *gin.Context) (int32, error) {
 	}
 }
 
-func GetUserUsername(c *gin.Context) (int32, error) {
+func GetUserUsername(c *gin.Context) (string, error) {
 
 	bearerToken := c.Request.Header.Get("Authorization")
 	tokenString := ""
@@ -53,14 +53,14 @@ func GetUserUsername(c *gin.Context) (int32, error) {
 	})
 
 	if err != nil {
-		return 0, err
+		return "", err
 	}
 
 	if claims, ok := tokenPure.Claims.(jwt.MapClaims); ok && tokenPure.Valid {
-		userID, _ := claims["username"].(float64)
-		return int32(userID), nil
+		username, _ := claims["username"].(string)
+		return username, nil
 	} else {
-		return 0, errors.New("invalid token")
+		return "", errors.New("invalid username")
 	}
 }
 
