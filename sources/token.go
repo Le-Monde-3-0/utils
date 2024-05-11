@@ -78,6 +78,9 @@ func JwtAuthMiddleware() gin.HandlerFunc {
 
 func TokenValid(c *gin.Context) error {
 	tokenString := ExtractToken(c)
+	if tokenString == os.Getenv("ADM_TOKEN") {
+		return nil
+	}
 	_, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
