@@ -84,7 +84,6 @@ func TokenValid(c *gin.Context) error {
 	if tokenString == os.Getenv("ADM_TOKEN") {
 		return nil
 	}
-	fmt.Println(tokenString)
 	if tokenString == "" {
 		return errors.New("no token given")
 	}
