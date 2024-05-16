@@ -20,7 +20,8 @@ func MakeHTTPRequest(c *gin.Context, method string, url string, requestBody inte
 	}
 
 	request.Header.Set("Content-Type", "application/json")
-	request.Header.Set("Authorization", "Bearer "+ExtractToken(c))
+	token, _ := ExtractToken(c)
+	request.Header.Set("Authorization", "Bearer "+token)
 
 	client := &http.Client{}
 	response, err := client.Do(request)

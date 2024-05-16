@@ -71,8 +71,7 @@ func JwtAuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		err := TokenValid(c)
 		if err != nil {
-			c.String(http.StatusUnauthorized, "Unauthorized")
-			c.Abort()
+			c.AbortWithStatus(http.StatusUnauthorized)
 			return
 		}
 		c.Next()
@@ -80,14 +79,17 @@ func JwtAuthMiddleware() gin.HandlerFunc {
 }
 
 func TokenValid(c *gin.Context) error {
-	tokenString := ExtractToken(c)
+	tokenString, err := ExtractToken(c)
+	if err != nil {
+		return err
+	}
 	if tokenString == os.Getenv("ADM_TOKEN") {
 		return nil
 	}
 	if tokenString == "" {
 		return errors.New("no token given")
 	}
-	_, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+	_, err = jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
 		}
@@ -99,14 +101,17 @@ func TokenValid(c *gin.Context) error {
 	return nil
 }
 
-func ExtractToken(c *gin.Context) string {
+func ExtractToken(c *gin.Context) (string, error) {
 	token := c.Query("token")
 	if token != "" {
-		return token
+		return token, nil
 	}
 	bearerToken := c.Request.Header.Get("Authorization")
-	if len(strings.Split(bearerToken, " ")) == 2 {
-		return strings.Split(bearerToken, " ")[1]
+	if bearerToken == "" {
+		return "", errors.New("No Authorization header provided")
 	}
-	return ""
+	if len(strings.Split(bearerToken, " ")) == 2 {
+		return strings.Split(bearerToken, " ")[1], nil
+	}
+	return "", errors.New("Invalid Authorization header format")
 }
