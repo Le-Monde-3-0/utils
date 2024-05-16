@@ -18,7 +18,6 @@ func GetUserId(c *gin.Context) (int32, error) {
 	if len(strings.Split(bearerToken, " ")) == 2 {
 		tokenString = strings.Split(bearerToken, " ")[1]
 	} else {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid token format"})
 		return 0, errors.New("invalid token")
 	}
 
@@ -46,7 +45,6 @@ func GetUserUsername(c *gin.Context) (string, error) {
 	if len(strings.Split(bearerToken, " ")) == 2 {
 		tokenString = strings.Split(bearerToken, " ")[1]
 	} else {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid token format"})
 		return "", errors.New("invalid token")
 	}
 
