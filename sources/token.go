@@ -19,6 +19,7 @@ func GetUserId(c *gin.Context) (int32, error) {
 		tokenString = strings.Split(bearerToken, " ")[1]
 	} else {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid token format"})
+		return 0, errors.New("invalid token")
 	}
 
 	tokenPure, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
@@ -46,6 +47,7 @@ func GetUserUsername(c *gin.Context) (string, error) {
 		tokenString = strings.Split(bearerToken, " ")[1]
 	} else {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid token format"})
+		return "", errors.New("invalid token")
 	}
 
 	tokenPure, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
