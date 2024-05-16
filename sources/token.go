@@ -3,11 +3,12 @@ package utils
 import (
 	"errors"
 	"fmt"
-	"github.com/dgrijalva/jwt-go"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"os"
 	"strings"
+
+	"github.com/dgrijalva/jwt-go"
+	"github.com/gin-gonic/gin"
 )
 
 func GetUserId(c *gin.Context) (int32, error) {
@@ -18,6 +19,7 @@ func GetUserId(c *gin.Context) (int32, error) {
 	if len(strings.Split(bearerToken, " ")) == 2 {
 		tokenString = strings.Split(bearerToken, " ")[1]
 	} else {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid token format"})
 		return 0, errors.New("invalid token")
 	}
 
@@ -45,6 +47,7 @@ func GetUserUsername(c *gin.Context) (string, error) {
 	if len(strings.Split(bearerToken, " ")) == 2 {
 		tokenString = strings.Split(bearerToken, " ")[1]
 	} else {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid token format"})
 		return "", errors.New("invalid token")
 	}
 
@@ -80,6 +83,9 @@ func TokenValid(c *gin.Context) error {
 	tokenString := ExtractToken(c)
 	if tokenString == os.Getenv("ADM_TOKEN") {
 		return nil
+	}
+	if tokenString == "" {
+		return errors.New("no token given")
 	}
 	_, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
